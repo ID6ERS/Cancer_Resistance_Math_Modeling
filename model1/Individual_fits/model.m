@@ -1,4 +1,4 @@
-function S = logistic(B) % returns the euclidean norm between data and fit
+function S = model(B) % returns the euclidean norm between data and fit
 global g;
 t = g(:, 1);
 g1 = g(:, 2:end);

@@ -1,4 +1,4 @@
-function S = full1(B)
+function S = model(B)
 global g;
 global opt;
 t = g(:, 1);
@@ -16,7 +16,6 @@ for i = 1:size(x_in_list,2)
     if (size(Sv,1) == 61)
         res = [res Sv];
     else
-        size(res)
         res = [res g(:, (2*i-1):(2*i))];
     end
 end

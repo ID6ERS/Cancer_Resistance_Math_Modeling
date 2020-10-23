@@ -7,7 +7,7 @@ parms = zeros(4,4);
 
 for opt = 1:4
     for i = 1:2000
-    [B,fval,exitflag,output] = fminsearch(@full1,B0);
+    [B,fval,exitflag,output] = fminsearch(@model,B0);
     if sum(B0 - B) == 0
         break;
     else
