@@ -4,17 +4,16 @@
 
 ### Core Code Contributors 
 
-- Supriyo Bhattacharya (Model 3) 
 - Kishore Hari (Model 1)
 - Mohit Kumar Jolly (Model 1) 
 - Sourabh Kotnala (Model 2) 
-
+- Supriyo Bhattacharya (Model 3)
 
 ### User Guide:
 
 1. Please find respective README files in each directory labeled model_(number) to get instructions of how to run deposited files. 
 
-2. The code-base for this paper's computational work is in both R and MATLAB. 
+2. The codebase for this paper's computational work is in both R and MATLAB. 
 
 3. Directory names are designed based on computational models explained in the paper. 
 
