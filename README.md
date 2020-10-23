@@ -17,11 +17,7 @@
 
 3. Directory names are designed based on computational models explained in the paper. 
 
-4. If you have Git installed, please clone this repository using the following command in a Command Line Interface (CLI): 
 
-```
-git clone https://github.com/ID6ERS/Cancer_Resistance_Math_Modeling.git
-```
 
 
 
