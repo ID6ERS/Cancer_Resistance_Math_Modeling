@@ -1,0 +1,147 @@
+%% Function for plotting
+% The following function plots "density games type" model fittings and
+% the obtained payoffs for the given data. It also plots the fitting error.
+% The optimized parameters for  fitting the model to data have already been  stored in
+% MAT data files. These MAT files are selected based on the data provided ( with or
+% without cisplatin).
+function []=plots_modelFit_payoffs_fitError(ncr,ncg,x0,hours,datatype)
+if strcmp(datatype,'withoutcis')
+  load('withoutCis_params_residual_jacobian.mat');
+elseif strcmp(datatype,'withcis')
+  load('withCis_params_residual_jacobian.mat');
+end
+t=[min(hours):0.1:max(hours)]';
+tdata=t(2:end,1);
+tr=size(tdata,1)
+tc=size(ncr,2)+size(ncg,2)
+[ypred,delta] = nlpredci(@(x,t)modifiedDensityGames(x,t,x0,tdata),repmat(tdata,tr*tc,1),B,R,'Jacobian',J);
+size(ypred)
+lower = reshape(ypred - delta,tr,tc);
+upper = reshape(ypred + delta,tr,tc);
+ypred=reshape(ypred,tr,tc);
+rc=1:7;
+smx=[(ncr(:,rc))];
+x=interp1(hours,smx,t);
+
+rdata=x(2:end,:);
+
+smx=[(ncg(:,rc))];
+x=interp1(hours,smx,tdata);
+gdata=x(1:end,:);
+maeS=sum(abs(ypred(:,rc) - rdata))/size(rdata,1);
+errS=maeS./(max(rdata)-min(rdata));
+maeT=sum(abs(ypred(:,7+rc) - gdata))/size(gdata,1);
+errT=maeT./(max(gdata)-min(gdata));
+
+if not(isfolder('Imagepdf'))
+  mkdir('Imagepdf')
+end
+
+if strcmp(datatype,'withoutcis')
+  if not(isfolder('Imagepdf/without-cisplatin'))
+    mkdir('Imagepdf/without-cisplatin')
+  end
+  pdfFldr='Imagepdf/without-cisplatin/';
+elseif strcmp(datatype,'withcis')
+  if not(isfolder('Imagepdf/with-cisplatin'))
+    mkdir('Imagepdf/with-cisplatin')
+  end
+  pdfFldr='Imagepdf/with-cisplatin/';
+end
+
+
+
+figure(4)
+bar([errS ;errT]')
+seed=['1:8';'1:4';'1:2';'1:1';'2:1';'4:1';'8:1'];
+set(gca, 'XTickLabel',seed)                                % Label Ticks As ‘xt’
+ax = gca;
+ax.XGrid = 'off';
+ax.YGrid = 'on';
+legend('sensitive', 'tolerant')
+lg=legend({'sensitive', 'tolerant'},'Location','northwest');
+lg.FontSize=12;
+xlabel('Initial ratio (S/T)','interpreter','latex','FontSize',17);
+ylabel('Fitting Error','interpreter','latex','FontSize',17);
+flnm='FittingErr';
+saveas(gcf,[pdfFldr,flnm],'pdf');
+saveas(gcf,[pdfFldr,flnm],'epsc');
+
+figure(1)
+
+cmap=distinguishable_colors(10);
+for i=1:7
+  plot(hours,ncr(:,i),'o','color',cmap(i,:))
+  hold on;
+  plot(tdata,ypred(:,i),'LineWidth',2,'Color',cmap(i,:))
+end
+txt = {'Initial Ratios (S/T):'};
+text(4,47000,txt,'fontsize',18);
+txt = {'1:8','1:4','1:2','1:1','2:1','4:1','8:1'};
+for i=1:7
+  text(4,47000-i*4000,txt(i),'fontsize',18,'color',cmap(i,:));
+end
+xlabel('Time (in Hours)','interpreter','latex','FontSize',17)
+ylabel('Sensitive cell Population','interpreter','latex','FontSize',17)
+set(gca, 'YTick', [0 10000 20000 30000 40000 50000])
+flnm='Sensitive';
+saveas(gcf,[pdfFldr,flnm],'pdf');
+saveas(gcf,[pdfFldr,flnm],'epsc');
+
+figure(2)
+for i=1:7
+  plot(hours,ncg(:,i),'o','color',cmap(i,:))
+  hold on;
+  plot(tdata,ypred(:,7+i),'LineWidth',2,'Color',cmap(i,:))
+end
+txt = {'Initial Ratios (S/T):'};
+text(4,65000,txt,'fontsize',18);
+txt = {'1:8','1:4','1:2','1:1','2:1','4:1','8:1'};
+for i=1:7
+  text(4,65000-i*5000,txt(i),'fontsize',18,'color',cmap(i,:));
+end
+xlabel('Time (in Hours)','interpreter','latex','FontSize',17)
+ylabel('Tolerant cell Population','interpreter','latex','FontSize',17)
+flnm='Tolerant';
+saveas(gcf,[pdfFldr,flnm],'pdf');
+saveas(gcf,[pdfFldr,flnm],'epsc');
+
+%suptitle('Payoff Values')
+alpha11=B(5)./B(3).*exp(-B(9).*tdata);
+alpha12=B(7)./B(3).*exp(-B(9).*tdata);
+alpha22=B(6)./B(4).*exp(-B(10).*tdata);
+alpha21=B(8)./B(4).*exp(-B(10).*tdata);
+%subplot(2,2,1)
+figure(3)
+plot(tdata,alpha11,'r','LineWidth',2.5);
+xlabel('Time (in Hours)','interpreter','latex','FontSize',17)
+ylabel('$\alpha_{_{SS}}$','interpreter','latex','FontSize',20)
+flnm='alpha-SS';
+saveas(gcf,[pdfFldr,flnm],'pdf');
+saveas(gcf,[pdfFldr,flnm],'epsc');
+%subplot(2,2,2)
+figure(5)
+plot(tdata,alpha12,'b','LineWidth',2.5);
+xlabel('Time (in Hours)','interpreter','latex','FontSize',17)
+ylabel('$\alpha_{_{ST}}$','interpreter','latex','FontSize',20)
+flnm='alpha-ST';
+saveas(gcf,[pdfFldr,flnm],'pdf');
+saveas(gcf,[pdfFldr,flnm],'epsc');
+%subplot(2,2,3)
+figure(6)
+plot(tdata,alpha21,'k','LineWidth',2.5);
+xlabel('Time (in Hours)','interpreter','latex','FontSize',17)
+ylabel('$\alpha_{_{TS}}$','interpreter','latex','FontSize',20)
+ax = gca; ax.YAxis.Exponent = 3;
+flnm='alpha-TS';
+saveas(gcf,[pdfFldr,flnm],'pdf');
+saveas(gcf,[pdfFldr,flnm],'epsc');
+%ytickformat('%.2e')
+%subplot(2,2,4)
+figure(7)
+plot(tdata,alpha22,'g','LineWidth',2.5);
+xlabel('Time (in Hours)','interpreter','latex','FontSize',17)
+ylabel('$\alpha_{_{TT}}$','interpreter','latex','FontSize',20)
+flnm='alpha-TT';
+saveas(gcf,[pdfFldr,flnm],'pdf');
+saveas(gcf,[pdfFldr,flnm],'epsc');
