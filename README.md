@@ -1,6 +1,6 @@
 # Dynamic phenotypic switching and group behavior help cancer cells evade chemotherapy 
 
-### Manuscript under review in Patterns journal by Science Press. 
+### Manuscript under review in Patterns journal by Cell Press. 
 
 ### Core Code Contributors 
 
