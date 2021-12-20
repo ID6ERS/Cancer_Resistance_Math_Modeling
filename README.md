@@ -39,7 +39,7 @@
 - Sourabh Kotnala (Model 2)
 - Supriyo Bhattacharya (Model 3)
 
-### User Guide:
+### User Guide
 
 1. Please find respective README files in each directory labeled model_(number) to get instructions of how to run deposited files.
 
